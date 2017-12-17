@@ -35,3 +35,36 @@ def spain_flag():
 spain_flag()
 sleep(3)
 sense.clear()
+for i in range(0,7): #set random green matrix dots
+    for j in range(0,7):
+        if randint(0,100) < 30:
+            sense.set_pixel(i,j,(0,255,0))
+
+flag = 1
+count = 0
+
+while flag:
+    for i in range(0,7): #dim all
+        for j in range(0,7):
+            x = sense.get_pixel(i,j)[1]
+            if x > 31:
+                sense.set_pixel(i,j,(0,x-32,0))
+            else:
+                count = count+1
+    sleep(.5)
+    
+    for i in range(0,7): #move green matrix dots
+        for j in range(0,7):
+            x = sense.get_pixel(i,j)[1]
+            if i>0:
+                y = sense.get_pixel(i-1,j)[1]
+                if y>31:
+                    sense.set_pixel(i,j,(0,y+32,0))
+
+    if count > 61:
+        flag = 0
+    else:
+        count = 0
+        sleep(.5)
+
+sense.clear()
