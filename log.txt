@@ -1,0 +1,4 @@
+- 2017/12/17 - Raspbian succesfully installed
+- 2017/12/17 - OpenSSH host keys fixed
+- 2017/12/17 - git and vim successfully installed
+- 2017/12/17 - sense-hat successfully installed 
