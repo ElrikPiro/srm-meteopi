@@ -51,15 +51,14 @@ while flag:
                 sense.set_pixel(i,j,(0,x-32,0))
             else:
                 count = count+1
-    sleep(.5)
     
     for i in range(0,7): #move green matrix dots
         for j in range(0,7):
             x = sense.get_pixel(i,j)[1]
-            if i>0:
-                y = sense.get_pixel(i-1,j)[1]
-                if y>31:
-                    sense.set_pixel(i,j,(0,y+32,0))
+            if i>0 and :
+                y = sense.get_pixel(i-1,j)
+                if y[1]>31 and y[0] < 31:
+                    sense.set_pixel(i,j,(255,y+32,255))
 
     if count > 61:
         flag = 0
