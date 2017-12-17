@@ -35,8 +35,8 @@ def spain_flag():
 spain_flag()
 sleep(3)
 sense.clear()
-for i in range(0,7): #set random green matrix dots
-    for j in range(0,7):
+for i in range(8): #set random green matrix dots
+    for j in range(8):
         if randint(0,100) < 30:
             sense.set_pixel(i,j,(0,255,0))
 
@@ -44,26 +44,29 @@ flag = 1
 count = 0
 
 while flag:
-    for i in range(0,7): #dim all
-        for j in range(0,7):
+    for i in range(8): #dim all
+        for j in range(8):
             x = sense.get_pixel(i,j)[1]
-            if x > 31:
+            if x > 63:
+                sense.set_pixel(i,j,(1,x-64,1))
+            elif x > 31:
                 sense.set_pixel(i,j,(0,x-32,0))
-            else:
-                count = count+1
+                
     
-    for i in range(0,7): #move green matrix dots
-        for j in range(0,7):
+    for i in range(8): #move green matrix dots
+        for j in range(8):
             x = sense.get_pixel(i,j)[1]
-            if i>0 and :
-                y = sense.get_pixel(i-1,j)
-                if y[1]>31 and y[0] < 31:
-                    sense.set_pixel(i,j,(255,y+32,255))
+            if j>0 and x<63:
+                y = sense.get_pixel(i,j-1)
+                if y[1]>63 and y[0] < 63:
+                    sense.set_pixel(i,j,(255,255,255))
 
-    if count > 61:
+    if count > 100:
         flag = 0
     else:
-        count = 0
-        sleep(.5)
+        if randint(0,100) < 75:
+            sense.set_pixel(randint(0,7),0,(255,255,255))
+        sleep(.1)
+        count = count+1
 
 sense.clear()
