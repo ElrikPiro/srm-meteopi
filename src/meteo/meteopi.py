@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from sense_hat import SenseHat,  ACTION_RELEASED
 from time import sleep
 from random import randint
