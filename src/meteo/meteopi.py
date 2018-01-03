@@ -274,6 +274,7 @@ def show_forecast(d,m):
 sense.stick.direction_left = left
 sense.stick.direction_right = right
 sense.stick.direction_middle = OK
+sense.stick.direction_up = sense.clear
 
 #init
 measurements = 0
