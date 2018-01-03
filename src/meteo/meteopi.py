@@ -1,4 +1,4 @@
-from sense_hat import SenseHat
+from sense_hat import SenseHat,  ACTION_RELEASED
 from time import sleep
 from random import randint
 import datetime
@@ -17,17 +17,119 @@ t = (0,153,153)
 
 altitude = 0#TBA-ALTITUDE#
 data = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+FSM = 0
+mutex = 0
+measurements = 0
 
-def left():
-    sense.set_rotation(90)
+def left(event):
+    global FSM, mutex
+    if mutex == 1 or event.action!=ACTION_RELEASED:
+        return;
+    elif FSM == 2:
+        FSM = 3
+        right(event)
+    elif FSM == 3:
+        FSM = 1
+        OK(event)
+    elif FSM == 4:
+        FSM = 2
+        right(event)
     return;
 
-def right():
-    sense.set_rotation(360-90)
+def right(event):
+    global FSM, mutex
+    if mutex == 1 or event.action!=ACTION_RELEASED:
+        return;
+    elif FSM == 2:
+        mutex = 1
+        sleep(0.5)
+        FSM = 3
+        print("Menu: Pressure")
+        sense.clear()
+        pixels = [
+                n,n,n,n,n,n,n,n,
+                n,n,n,n,n,n,n,w,
+                n,n,w,w,w,w,n,n,
+                n,w,n,r,n,n,w,n,
+                w,n,v,b,v,n,n,w,
+                n,n,n,b,n,n,n,n,
+                n,n,n,b,n,n,n,n,
+                n,n,n,b,n,n,n,n
+                ]
+        sense.set_pixels(pixels)
+        mutex = 0
+    elif FSM == 3:
+        mutex = 1
+        sleep(0.5)
+        FSM = 4
+        print("Menu: Humidity")
+        sense.clear()
+        pixels = [
+                n,n,n,n,n,n,n,n,
+                n,n,n,t,t,n,n,n,
+                n,n,n,t,t,n,n,n,
+                n,n,t,t,t,t,n,n,
+                n,n,t,t,t,t,n,n,
+                n,t,t,t,t,t,t,n,
+                n,t,t,t,t,t,t,n,
+                n,n,t,t,t,t,n,n
+                ]
+        sense.set_pixels(pixels)
+        mutex = 0
+    elif FSM  == 4:
+        FSM = 1
+        OK(event)
     return;
 
-def OK():
-
+def OK(event):
+    global FSM, mutex
+    if mutex == 1 or event.action != ACTION_RELEASED:
+        return;
+    elif FSM == 1:
+        mutex = 1
+        sleep(0.5)
+        FSM = 2
+        print("Menu: Temperature")
+        sense.clear()
+        pixels = [
+                n,n,n,b,b,n,n,n,
+                n,n,n,b,b,n,n,w,
+                n,n,n,b,b,w,w,n,
+                n,n,n,b,b,w,n,n,
+                n,n,n,b,b,w,w,n,
+                n,n,b,r,r,b,n,n,
+                n,n,b,r,r,b,n,n,
+                n,n,n,b,b,n,n,n
+                ]
+        sense.set_pixels(pixels)
+        mutex = 0
+    elif FSM == 2:
+        mutex = 1
+        sleep(0.5)
+        sense.clear()
+        print("temperature: "+str(round(sense.get_temperature(),2))+" C")
+        sense.show_message(str(round(sense.get_temperature(),2))+" Celsius")
+        mutex = 0
+        FSM = 1
+        show_forecast(data,measurements)
+    elif FSM == 3:
+        mutex = 1
+        sleep(0.5)
+        sense.clear()
+        print("Pressure: "+str(round(sense.get_pressure(),2))+" Millibars")
+        sense.show_message(str(round(sense.get_pressure(),2))+" Millibars")
+        mutex = 0
+        FSM = 1
+        show_forecast(data,measurements)
+    elif FSM == 4:
+        mutex = 1
+        sleep(0.5)
+        sense.clear()
+        print("Humidity: "+str(round(sense.get_humidity(),2))+" %")
+        sense.show_message(str(round(sense.get_humidity(),2))+" %")
+        mutex = 0
+        FSM = 1
+        show_forecast(data,measurements)
     return;
 
 def random_color():
@@ -173,10 +275,9 @@ sense.stick.direction_right = right
 sense.stick.direction_middle = OK
 
 #init
-FSM = 0
 measurements = 0
 counter = 0
-sense.show_message("Welcome to meteopi, use the joystick to navigate. Forecasting will take several hours to start showing reliable data.",scroll_speed=0.05)
+#sense.show_message("Welcome to meteopi, use the joystick to navigate. Forecasting will take several hours to start showing reliable data.",scroll_speed=0.05)
 sense.clear()
 
 #while || FSM1 Standby
@@ -186,11 +287,13 @@ while True:
     strnow = now.strftime("%d-%m-%Y %H:%M")
     
     if FSM == 1:
+        mutex = 1
         print(strnow)
         sense.show_message(strnow,scroll_speed=0.05)
         show_forecast(data,measurements)
+        mutex = 0
     
-    if counter%60 == 0:#REMOVE
+    if counter%60 == 0:
         if measurements < 24:
             data[measurements] = sense.get_pressure()*0.0295301
             print(str(data[measurements])+" inches, incomplete set")
@@ -201,7 +304,9 @@ while True:
             data[23] = sense.get_pressure()*0.0295301
             print(str(data[23])+" inches")
         if FSM == 1:
+            mutex = 1
             show_forecast(data,measurements)
+            mutex = 0
     
     counter=(counter+1)%60
     print(str(60-counter)+" minutes to next measure.")
