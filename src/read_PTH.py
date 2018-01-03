@@ -37,6 +37,8 @@ t = round(sense.get_temperature(),2)
 h = round(sense.get_humidity(),2)
 msg = "Status: "+str(p)+" millibars, "+str(t)+" degrees (Celsius) and "+str(h)+"% relative humidity."
 print(msg)
+print(round(sense.get_temperature_from_pressure(),2))
+print("Barometric inches: "+str(p*0.0295301)+" 1 atm = 29.92 ")
 print("Pressure higher than 1000 indicates high probability of clear skies.")
 print("temperature is susceptible of showing higher than actual values")
 sense.show_message(msg)
