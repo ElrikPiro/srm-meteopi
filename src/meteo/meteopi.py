@@ -119,9 +119,9 @@ def OK(event):
         sense.clear()
         print("Pressure: "+str(round(sense.get_pressure(),2))+" Millibars")
         sense.show_message(str(round(sense.get_pressure(),2))+" Millibars")
-	sense.show_message(str(round(sense.get_pressure()*0.0295301,2))+" Inches")
-	ls = least_squares(data,measurements)
-	sense.show_message("Trend: "+str(round(ls[1],3))+" Inches per hour.")
+        sense.show_message(str(round(sense.get_pressure()*0.0295301,2))+" Inches")
+        ls = least_squares(data,measurements)
+        sense.show_message("Trend: "+str(round(ls[1],3))+" Inches per hour.")
         mutex = 0
         FSM = 1
         show_forecast(data,measurements)
