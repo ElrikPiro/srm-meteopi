@@ -289,6 +289,8 @@ measurements = 0
 counter = 0
 #sense.show_message("Welcome to meteopi, use the joystick to navigate. Forecasting will take several hours to start showing reliable data.",scroll_speed=0.05)
 sense.clear()
+sense.get_pressure()
+
 
 #while || FSM1 Standby
 FSM = 1
