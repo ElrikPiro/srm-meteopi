@@ -119,6 +119,9 @@ def OK(event):
         sense.clear()
         print("Pressure: "+str(round(sense.get_pressure(),2))+" Millibars")
         sense.show_message(str(round(sense.get_pressure(),2))+" Millibars")
+	sense.show_message(str(round(sense.get_pressure()*0.0295301,2))+" Inches")
+	ls = least_squares(data,measurements)
+	sense.show_message("Trend: "+str(round(ls[1],3))+" Inches per hour.")
         mutex = 0
         FSM = 1
         show_forecast(data,measurements)
@@ -214,7 +217,7 @@ def show_rain():
     sense.set_pixels(pixels)
     return;
 
-def show_forecast(d,m):
+def least_squares(d,m):
     #Least squares adjustment
     x = 0;
     y = 0;
@@ -247,25 +250,30 @@ def show_forecast(d,m):
     print("DEBUG: "+str(x)+" "+str(y)+" "+str(xy)+" "+str(x2))
     print("Please note that this is a linear estimation.")
     
-    if last_value > 30.00 and last_value < 30.20 and c < 0.01 and c > -0.01:
+    return [last_value,c]
+
+def show_forecast(d,m):
+    le = least_squares(d,m)
+    
+    if le[0] > 30.00 and le[0] < 30.20 and le[1] < 0.01 and le[1] > -0.01:
         show_sun()
-    elif last_value > 30.00 and last_value < 30.20 and c > 0.03:
+    elif le[0] > 30.00 and le[0] < 30.20 and le[1] > 0.03:
         show_sun()
-    elif last_value > 30.00 and last_value < 30.20 and c < -0.03:
+    elif le[0] > 30.00 and le[0] < 30.20 and le[1] < -0.03:
         show_clouds()
-    elif last_value > 30.20 and c < -0.03:
+    elif le[0] > 30.20 and le[1] < -0.03:
         show_clouds()
-    elif last_value > 30.20 and c > -0.01:
+    elif le[0] > 30.20 and le[1] > -0.01:
         show_sun()
-    elif last_value < 29.80 and c < -0.03:
+    elif le[0] < 29.80 and le[1] < -0.03:
         show_storm()
-    elif last_value < 29.80 and c > 0.03:
+    elif le[0] < 29.80 and le[1] > 0.03:
         show_clouds()
-    elif last_value < 30.00 and c > 0.01:
+    elif le[0] < 30.00 and le[1] > 0.01:
         show_sun()
-    elif last_value < 30.00 and c < -0.03:
+    elif le[0] < 30.00 and le[1] < -0.03:
         show_rain()
-    elif last_value < 30.00 and c < -0.01:
+    elif le[0] < 30.00 and le[1] < -0.01:
         show_rain()
     else:
         show_clouds_sun()
